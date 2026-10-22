@@ -35,7 +35,11 @@
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
       </extensionElements>
     </userTask>
+<<<<<<< HEAD
     <serviceTask id="ServiceTask_11" name="Convertir en cliente" flowable:delegateExpression="${miDelegadoLead}">
+=======
+    <serviceTask id="Activity_1" name="Convertir en cliente" flowable:type="external" flowable:topic="registrarLeadTopic" />
+>>>>>>> 5f2d2f2b7f45fb51fbc4758d340d91ebaf8d68ce
       <extensionElements>
         <design:stencilid><![CDATA[ServiceTask]]></design:stencilid>
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>

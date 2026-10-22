@@ -7,7 +7,7 @@
       <design:creationdate><![CDATA[2026-10-21T21:32:54.070Z]]></design:creationdate>
       <design:modificationdate><![CDATA[2026-10-22T01:19:40.686Z]]></design:modificationdate>
     </extensionElements>
-    <serviceTask id="ServiceTask_3" name="Buscar clientes con fechas proximas." flowable:class="${true}">
+    <serviceTask id="ServiceTask_3" name="Buscar clientes con fechas proximas." flowable:expression="${true}">
       <extensionElements>
         <design:stencilid><![CDATA[ServiceTask]]></design:stencilid>
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
@@ -20,7 +20,7 @@
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
       </extensionElements>
     </userTask>
-    <serviceTask id="ServiceTask_7" name="Enviar notificacion." flowable:class="${true}">
+    <serviceTask id="ServiceTask_7" name="Enviar notificacion." flowable:expression="${true}">
       <extensionElements>
         <design:stencilid><![CDATA[ServiceTask]]></design:stencilid>
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>

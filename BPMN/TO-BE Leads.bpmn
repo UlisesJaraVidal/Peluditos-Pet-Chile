@@ -35,13 +35,13 @@
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
       </extensionElements>
     </userTask>
-    <serviceTask id="ServiceTask_11" name="Convertir en cliente" flowable:class="${true}">
+    <serviceTask id="ServiceTask_11" name="Convertir en cliente" flowable:delegateExpression="${miDelegadoLead}">
       <extensionElements>
         <design:stencilid><![CDATA[ServiceTask]]></design:stencilid>
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
       </extensionElements>
     </serviceTask>
-    <serviceTask id="ServiceTask_13" name="Activar Oportunidad comercial." flowable:class="${true}">
+    <serviceTask id="ServiceTask_13" name="Activar Oportunidad comercial." flowable:expression="${true}">
       <extensionElements>
         <design:stencilid><![CDATA[ServiceTask]]></design:stencilid>
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>

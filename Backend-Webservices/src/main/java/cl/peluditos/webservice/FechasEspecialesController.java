@@ -1,14 +1,21 @@
+
 package cl.peluditos.webservice;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
-@RestController
+@Component
+@Path("/api/clientes")
 public class FechasEspecialesController {
 
-    @GetMapping("/api/clientes/fechas-proximas")
+    @GET
+    @Path("/fechas-proximas")
+    @Produces(MediaType.APPLICATION_JSON)
     public List<Map<String, String>> obtenerFechasProximas() {
 
         return List.of(

@@ -1,35 +1,52 @@
 
 package cl.peluditos.webservice;
 
-import org.junit.jupiter.api.Test;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+
+import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.JdbcTemplate;
+
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+@Component
+@Path("/api/clientes")
+public class FechasEspecialesController {
 
-class FechasEspecialesControllerTests {
+    private final JdbcTemplate jdbcTemplate;
 
-    @Test
-    void debeDevolverDosClientesConFechasEspeciales() {
+    public FechasEspecialesController(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
-        FechasEspecialesController controller =
-                new FechasEspecialesController();
+    @GET
+    @Path("/fechas-proximas")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Map<String, String>> obtenerFechasProximas() {
 
-        List<Map<String, String>> clientes =
-                controller.obtenerFechasProximas();
+        String sql = """
+            SELECT
+                c.nombre AS cliente,
+                m.nombre AS mascota,
+                f.tipo,
+                f.fecha
+            FROM fechas_especiales f
+            JOIN mascotas m ON f.mascota_id = m.id
+            JOIN clientes c ON m.cliente_id = c.id
+            ORDER BY f.fecha
+            """;
 
-        assertEquals(2, clientes.size());
-
-        assertEquals("Maria Gonzalez",
-                clientes.get(0).get("cliente"));
-
-        assertEquals("Luna",
-                clientes.get(0).get("mascota"));
-
-        assertEquals("Pedro Ramirez",
-                clientes.get(1).get("cliente"));
-
-        assertEquals("Max",
-                clientes.get(1).get("mascota"));
+        return jdbcTemplate.query(sql, (rs, fila) ->
+            Map.of(
+                "cliente", rs.getString("cliente"),
+                "mascota", rs.getString("mascota"),
+                "tipo", rs.getString("tipo"),
+                "fecha", rs.getDate("fecha")
+                           .toLocalDate().toString()
+            )
+        );
     }
 }

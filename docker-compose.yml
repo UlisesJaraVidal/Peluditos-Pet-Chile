@@ -1,0 +1,43 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: flowable-postgres
+    environment:
+      POSTGRES_DB: flowable
+      POSTGRES_USER: flowable
+      POSTGRES_PASSWORD: 6Xy3LkV7!9lo2^h
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - flowable-network
+
+  flowable-rest:
+    image: flowable/flowable-rest:7.2.0
+    container_name: flowable-rest
+    environment:
+      SPRING_DATASOURCE_DRIVER-CLASS-NAME: org.postgresql.Driver
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/flowable
+      SPRING_DATASOURCE_USERNAME: flowable
+      SPRING_DATASOURCE_PASSWORD: 6Xy3LkV7!9lo2^h
+      FLOWABLE_REST_APP_ADMIN_USER-ID: rest-admin
+      FLOWABLE_REST_APP_ADMIN_PASSWORD: test
+      FLOWABLE_REST_APP_CORS_ENABLED: "true"
+      FLOWABLE_REST_APP_CORS_ALLOWEDORIGINS: "http://localhost:5173,http://localhost:3000"
+      FLOWABLE_REST_APP_CORS_ALLOWEDHEADERS: "Authorization,Content-Type,Accept"
+      FLOWABLE_REST_APP_CORS_ALLOWEDMETHODS: "GET,POST,PUT,DELETE,OPTIONS"
+      FLOWABLE_REST_APP_CORS_ALLOWCREDENTIALS: "true"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - flowable-network
+
+volumes:
+  postgres_data:
+
+networks:
+  flowable-network:
+    driver: bridge

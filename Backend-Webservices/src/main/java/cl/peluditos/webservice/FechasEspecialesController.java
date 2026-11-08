@@ -1,7 +1,8 @@
-
 package cl.peluditos.webservice;
 
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
@@ -22,6 +23,7 @@ public class FechasEspecialesController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // 1. ENDPOINT ORIGINAL (GET) - Para leer las fechas
     @GET
     @Path("/fechas-proximas")
     @Produces(MediaType.APPLICATION_JSON)
@@ -44,9 +46,30 @@ public class FechasEspecialesController {
                 "cliente", rs.getString("cliente"),
                 "mascota", rs.getString("mascota"),
                 "tipo", rs.getString("tipo"),
-                "fecha", rs.getDate("fecha")
-                           .toLocalDate().toString()
+                "fecha", rs.getDate("fecha").toLocalDate().toString()
             )
         );
+    }
+
+    // 2. NUEVO ENDPOINT (POST) - Para que el Worker guarde al cliente desde Flowable
+    @POST
+    @Path("/registrar")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String registrarLead(Map<String, Object> payload) {
+        try {
+            // Extraemos el nombre que envía Flowable (si no viene, ponemos uno por defecto)
+            String nombreCliente = (String) payload.getOrDefault("nombreCliente", "Cliente Sin Nombre");
+            
+            // Hacemos el INSERT en la base de datos PostgreSQL
+            String sql = "INSERT INTO clientes (nombre) VALUES (?)";
+            jdbcTemplate.update(sql, nombreCliente);
+            
+            System.out.println("✅ ¡Lead guardado en la base de datos!: " + nombreCliente);
+            return "Lead guardado exitosamente";
+        } catch (Exception e) {
+            System.out.println("❌ Error al guardar el lead: " + e.getMessage());
+            return "Error al guardar el lead";
+        }
     }
 }

@@ -1,3 +1,4 @@
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -5,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: flowable
       POSTGRES_USER: flowable
-      POSTGRES_PASSWORD: 6Xy3LkV7!9lo2^h
+      POSTGRES_PASSWORD: "${FLOWABLE_DB_PASSWORD:?FLOWABLE_DB_PASSWORD_requerida}"
     ports:
       - "5432:5432"
     volumes:
@@ -20,9 +21,11 @@ services:
       SPRING_DATASOURCE_DRIVER-CLASS-NAME: org.postgresql.Driver
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/flowable
       SPRING_DATASOURCE_USERNAME: flowable
-      SPRING_DATASOURCE_PASSWORD: 6Xy3LkV7!9lo2^h
+      SPRING_DATASOURCE_PASSWORD: "${FLOWABLE_DB_PASSWORD:?FLOWABLE_DB_PASSWORD_requerida}"
+
       FLOWABLE_REST_APP_ADMIN_USER-ID: rest-admin
-      FLOWABLE_REST_APP_ADMIN_PASSWORD: test
+      FLOWABLE_REST_APP_ADMIN_PASSWORD: "${FLOWABLE_ADMIN_PASSWORD:?FLOWABLE_ADMIN_PASSWORD_requerida}"
+
       FLOWABLE_REST_APP_CORS_ENABLED: "true"
       FLOWABLE_REST_APP_CORS_ALLOWEDORIGINS: "http://localhost:5173,http://localhost:3000"
       FLOWABLE_REST_APP_CORS_ALLOWEDHEADERS: "Authorization,Content-Type,Accept"

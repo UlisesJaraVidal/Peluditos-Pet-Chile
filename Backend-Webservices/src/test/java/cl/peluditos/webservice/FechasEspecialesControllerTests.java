@@ -62,4 +62,25 @@ class FechasEspecialesControllerTests {
                 .<RowMapper<Map<String, String>>>any()
         );
     }
+
+
+@Test
+void debeRegistrarClienteDesdeFlowable() {
+
+    JdbcTemplate jdbcTemplate = mock(JdbcTemplate.class);
+
+    FechasEspecialesController controller =
+        new FechasEspecialesController(jdbcTemplate);
+
+    String respuesta = controller.registrarLead(
+        Map.of("nombreCliente", "Cliente Prueba")
+    );
+
+    assertEquals("Lead guardado exitosamente", respuesta);
+
+    verify(jdbcTemplate).update(
+        "INSERT INTO clientes (nombre) VALUES (?)",
+        "Cliente Prueba"
+    );
+}
 }

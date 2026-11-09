@@ -45,9 +45,4 @@ networks:
   flowable-network:
     driver: bridge
 
-    
-# Variables privadas de PostgreSQL y Flowable
-.env
-.env.*
-!.env.example
 

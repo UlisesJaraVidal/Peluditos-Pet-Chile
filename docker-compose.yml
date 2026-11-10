@@ -1,4 +1,3 @@
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -27,7 +26,8 @@ services:
       FLOWABLE_REST_APP_ADMIN_PASSWORD: "${FLOWABLE_ADMIN_PASSWORD:?FLOWABLE_ADMIN_PASSWORD_requerida}"
 
       FLOWABLE_REST_APP_CORS_ENABLED: "true"
-      FLOWABLE_REST_APP_CORS_ALLOWEDORIGINS: "http://localhost:5173,http://localhost:3000"
+      # MODIFICADO AQUÍ: Se agregó el puerto 5500 donde corre el Frontend
+      FLOWABLE_REST_APP_CORS_ALLOWEDORIGINS: "http://localhost:5173,http://localhost:3000,http://localhost:8000"
       FLOWABLE_REST_APP_CORS_ALLOWEDHEADERS: "Authorization,Content-Type,Accept"
       FLOWABLE_REST_APP_CORS_ALLOWEDMETHODS: "GET,POST,PUT,DELETE,OPTIONS"
       FLOWABLE_REST_APP_CORS_ALLOWCREDENTIALS: "true"
@@ -44,5 +44,3 @@ volumes:
 networks:
   flowable-network:
     driver: bridge
-
-

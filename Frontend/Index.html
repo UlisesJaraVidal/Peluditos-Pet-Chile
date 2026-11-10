@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peluditos Pet - Bandeja de Tareas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>🐾 Peluditos Pet - Gestión de Clientes</h1>
+    </header>
+
+    <main>
+        <div class="actions">
+            <button id="btn-nuevo-lead">+ Registrar Nuevo Lead</button>
+            <button id="btn-refrescar">↻ Actualizar Tareas</button>
+        </div>
+
+        <div id="lista-tareas">
+            <p class="loading">Cargando tareas pendientes...</p>
+        </div>
+    </main>
+
+    <div id="modal-formulario" class="modal oculto">
+        <div class="modal-contenido">
+            <span class="cerrar">&times;</span>
+            <h2>Registrar Nuevo Lead</h2>
+            <form id="form-lead">
+                <label>Nombre del Cliente:</label>
+                <input type="text" id="nombreCliente" required>
+                
+                <label>¿Desea comprar?</label>
+                <select id="quiereComprar">
+                    <option value="true">Sí, desea comprar</option>
+                    <option value="false">No, solo está consultando</option>
+                </select>
+
+                <button type="button" id="btn-guardar">Guardar y Avanzar</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,10 +1,9 @@
 const FLOWABLE_API = "http://localhost:8080/flowable-rest/service";
-const AUTH_HEADER = "Basic " + btoa("rest-admin:MiPasswordSegura_Admin_2026!");
-
+const AUTH_HEADER = "Basic " + btoa(`${window.APP_CONFIG.flowableUser}:${window.APP_CONFIG.flowablePass}`);
 const listaTareas = document.getElementById("lista-tareas");
 const modal = document.getElementById("modal-formulario");
 const btnNuevoLead = document.getElementById("btn-nuevo-lead");
-const btnRefrescar = document.getElementById("btn-refrescar");
+const btnRefrescar = .\mvnw.cmd clean package -DskipTestsdocument.getElementById("btn-refrescar");
 const btnCerrar = document.querySelector(".cerrar");
 
 // Escuchamos el clic del botón Guardar

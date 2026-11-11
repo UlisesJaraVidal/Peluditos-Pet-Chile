@@ -3,7 +3,7 @@ const AUTH_HEADER = "Basic " + btoa(`${window.APP_CONFIG.flowableUser}:${window.
 const listaTareas = document.getElementById("lista-tareas");
 const modal = document.getElementById("modal-formulario");
 const btnNuevoLead = document.getElementById("btn-nuevo-lead");
-const btnRefrescar = .\mvnw.cmd clean package -DskipTestsdocument.getElementById("btn-refrescar");
+const btnRefrescar = document.getElementById("btn-refrescar");
 const btnCerrar = document.querySelector(".cerrar");
 
 // Escuchamos el clic del botón Guardar

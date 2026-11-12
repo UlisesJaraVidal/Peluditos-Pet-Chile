@@ -1,35 +1,34 @@
-# Evidencias – Evaluación 2
 
-**Proyecto:** Peluditos Pet Chile  
-**Responsable:** Bastián Fernández Garrido
+# Evidencias - Evaluación 2
 
-## Servicios implementados
+## Peluditos Pet Chile
 
-Se adaptó el servicio de fechas especiales a Jakarta REST (JAX-RS), utilizando Jersey y Spring Boot.
+### Servicios implementados
+- GET /api/clientes/fechas-proximas
+- POST /api/clientes/registrar
+- Integración Java JAX-RS con PostgreSQL.
 
-Se implementaron dos operaciones:
-
-- **GET /api/clientes/fechas-proximas:** consulta información de clientes, mascotas y fechas especiales desde PostgreSQL.
-- **POST /api/clientes/registrar:** recibe información de clientes y permite registrarlos mediante JdbcTemplate.
-
-## Pruebas realizadas
-
+### Pruebas realizadas
 - Compilación Maven: BUILD SUCCESS.
-- Pruebas automáticas: 3 exitosas, 0 fallos y 0 errores.
-- Inicio correcto de Spring Boot.
-- Consulta GET con respuesta JSON desde PostgreSQL.
-- Prueba automatizada del POST utilizando JDBC simulado.
+- Última ejecución: 2 pruebas exitosas,
+  0 fallos y 0 errores.
+- Consulta GET verificada con PostgreSQL.
+- Registro POST confirmado mediante pgAdmin.
+- Conexión mediante variables de entorno.
 
-Adicionalmente, el equipo informó que comprobó el registro de un cliente desde el servicio Java, verificando su almacenamiento en PostgreSQL.
+### Integración del sistema
+Ulises informó que validó el funcionamiento
+completo de Frontend, Flowable, External Worker,
+JAX-RS y PostgreSQL.
 
-## Evidencias audiovisuales
+### Evidencias disponibles
+- Videos de pruebas técnicas.
+- Capturas de Maven.
+- Capturas de registro POST.
+- Evidencias de PostgreSQL.
 
-Los videos técnicos y las capturas de comprobación se encuentran en esta carpeta, incluyendo las pruebas JAX-RS, Maven, PostgreSQL y configuración de Docker.
-
-## Seguridad e integración
-
-Se incorporaron variables de entorno, un archivo `.gitignore` y un archivo `.env.example` para mejorar el manejo de las credenciales.
-
-Queda pendiente renovar las credenciales expuestas anteriormente y comprobar nuevamente el recorrido completo del sistema con la configuración segura.
-
-La integración final con Flowable OSS, External Worker y Frontend requiere confirmación antes del merge a la rama principal.
+### Pendientes de entrega
+- Incorporar el video para la emprendedora.
+- Confirmar la protección de todas las
+  credenciales del repositorio.
+- Revisar y aprobar la PR #2.

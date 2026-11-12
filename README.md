@@ -1,25 +1,87 @@
-# Peluditos-Pet-Chile
-## Entrega 1 
-Gestion de leads y oportunidades comerciales(BPMN+ Flowable + Java)
-El servidor rechaza la solicitud con un error HTTP 401/403 debido a restricciones de la cuenta institucional.
-https://youtu.be/vestnSPsK40 Vinculo video para PYME entrega 1.
-https://youtu.be/L8F82taI7QQ Vinculo video a profesor entrega 1. 
 
-## Entrega 2 - Arquitectura y Tecnologías
+# Peluditos Pet Chile
 
-Para esta entrega se migró de Flowable Enterprise a un entorno **Flowable OSS** local utilizando **Docker**.
+Proyecto de gestión de leads y oportunidades
+comerciales mediante BPMN, Flowable y Java.
 
-### Componentes Principales
-- **Flowable OSS (Docker - Puerto 8080):** Motor de procesos ejecutando el BPMN TO-BE.
-- **PostgreSQL (Docker - Puerto 5432):** Base de datos relacional que aloja tanto el esquema de Flowable como la base de datos de negocio (`peluditos_db`).
-- **External Worker (Spring Boot - Puerto 8081):** Escucha las tareas del topic `registrarLeadTopic` y realiza peticiones HTTP.
-- **Web Service JAX-RS (Spring Boot - Puerto 8082):** Implementado con Jersey (Jakarta EE). Recibe los datos del Worker y realiza un `INSERT` en PostgreSQL usando `JdbcTemplate`.
-- **Interfaz Web Propia (Planificada):** Se implementará una bandeja de tareas conectada a la API REST de Flowable OSS.
+## Entrega 1
 
-### Persistencia de Datos
-La tabla `clientes` en PostgreSQL almacena los datos de negocio (Nombre del cliente, etc.) demostrando que los datos sobreviven al reinicio de los componentes.
+Se realizó el modelado de procesos AS-IS y
+TO-BE y las primeras pruebas de integración.
 
-### Instrucciones de Ejecución (Local)
-1. Levantar la infraestructura: `docker compose up -d`
-2. Ejecutar el Worker: `cd External-Worker && java -jar target/worker-0.0.1-SNAPSHOT.jar`
-3. Ejecutar el Web Service JAX-RS: `cd Backend-Webservices && .\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--server.port=8082"`
+Se documentaron las restricciones HTTP 401/403
+encontradas con la cuenta institucional.
+
+Videos de Entrega 1:
+- PYME: https://youtu.be/vestnSPsK40
+- Profesor: https://youtu.be/L8F82taI7QQ
+
+## Entrega 2 - Arquitectura y tecnologías
+
+Se implementó una solución local utilizando
+Flowable OSS, Docker, PostgreSQL y Java.
+
+### Componentes implementados
+
+- Flowable REST 7.2.0: motor de procesos BPMN.
+- PostgreSQL: persistencia de información.
+- External Worker: recibe tareas de Flowable.
+- Web Service JAX-RS: registra clientes mediante
+  Spring Boot, Jersey y JdbcTemplate.
+- Frontend HTML, CSS y JavaScript: interfaz
+  propia para registrar leads y gestionar tareas.
+
+### Funcionamiento
+
+1. El usuario registra un lead en el Frontend.
+2. Flowable inicia y gestiona el proceso BPMN.
+3. El External Worker recibe la tarea.
+4. El Worker llama al servicio JAX-RS.
+5. El Backend registra el cliente en PostgreSQL.
+
+El equipo informó que validó este recorrido
+completo en su entorno local.
+
+### Servicios principales
+
+GET /api/clientes/fechas-proximas
+
+POST /api/clientes/registrar
+
+### Configuración local
+
+La infraestructura utiliza Docker Compose.
+
+La base de datos de negocio peluditos_db y
+sus tablas deben estar creadas en PostgreSQL.
+
+Las contraseñas deben configurarse localmente,
+sin publicarlas en el repositorio.
+
+Consultar:
+- Backend-Webservices/README.md
+- Backend-Webservices/CONFIGURACION_SEGURA.md
+- Frontend/README.md
+- .env.example
+
+### Pruebas realizadas
+
+- Compilación Maven: BUILD SUCCESS.
+- Última ejecución: 2 pruebas exitosas.
+- GET consultado desde PostgreSQL.
+- POST confirmado mediante pgAdmin.
+- Integración completa validada por Ulises.
+
+### Evidencias
+
+Consultar la carpeta Videos/Entrega-2.
+
+Contiene videos técnicos, capturas de Maven,
+pruebas PostgreSQL y documentación.
+
+### Cierre de la evaluación
+
+Pendiente:
+- Incorporar el video de la emprendedora.
+- Completar la revisión de credenciales.
+- Revisar y aprobar la PR #2.

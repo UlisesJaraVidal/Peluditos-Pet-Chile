@@ -1,0 +1,6 @@
+
+# Archivos privados de PostgreSQL y Flowable
+.env
+.env.*
+!.env.example
+Frontend/config.js

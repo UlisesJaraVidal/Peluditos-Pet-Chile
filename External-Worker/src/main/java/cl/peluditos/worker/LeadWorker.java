@@ -1,3 +1,4 @@
+
 package cl.peluditos.worker;
 
 import org.flowable.external.client.AcquiredExternalWorkerJob;
@@ -15,9 +16,10 @@ public class LeadWorker {
 
     @FlowableWorker(topic = "registrarLeadTopic")
     public void procesarLead(AcquiredExternalWorkerJob job) {
+
         System.out.println("==================================================");
         System.out.println("¡Flowable me ha enviado un trabajo!");
-        
+
         Map<String, Object> variables = job.getVariables();
         System.out.println("Datos del Lead recibidos: " + variables);
         System.out.println("==================================================");
@@ -25,26 +27,52 @@ public class LeadWorker {
         try {
             // Extraemos el nombre del cliente
             String nombreCliente = "Desconocido";
+
             if (variables.containsKey("nombreCliente")) {
                 nombreCliente = variables.get("nombreCliente").toString();
             }
 
-            // Armamos un JSON válido manualmente
+            // Armamos el JSON para enviar al Backend
             String jsonPayload = "{\"nombreCliente\":\"" + nombreCliente + "\"}";
 
-            // Hacemos la llamada al Web Service (Puerto 8082)
+            // URL del Backend configurable mediante variable de entorno
+            String backendUrl = System.getenv().getOrDefault(
+                    "PELUDITOS_BACKEND_URL",
+                    "http://localhost:8082"
+            );
+
+            // Evitamos duplicar la barra final de la URL
+            if (backendUrl.endsWith("/")) {
+                backendUrl = backendUrl.substring(0, backendUrl.length() - 1);
+            }
+
+            // Creamos el cliente HTTP
             HttpClient client = HttpClient.newHttpClient();
+
+            // Construimos la solicitud al Web Service JAX-RS
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8082/api/clientes/registrar"))
-                    .header("Content-Type", "application/json") // ESTA LÍNEA ES LA QUE ARREGLA EL ERROR 415
+                    .uri(URI.create(backendUrl + "/api/clientes/registrar"))
+                    .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                     .build();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("Respuesta del Web Service (" + response.statusCode() + "): " + response.body());
-            
+            // Enviamos la solicitud al Backend
+            HttpResponse<String> response = client.send(
+                    request,
+                    HttpResponse.BodyHandlers.ofString()
+            );
+
+            // Mostramos el resultado de la comunicación
+            System.out.println(
+                    "Respuesta del Web Service (" +
+                    response.statusCode() + "): " +
+                    response.body()
+            );
+
         } catch (Exception e) {
-            System.out.println("Error al llamar al Web Service: " + e.getMessage());
+            System.out.println(
+                    "Error al llamar al Web Service: " + e.getMessage()
+            );
         }
     }
 }

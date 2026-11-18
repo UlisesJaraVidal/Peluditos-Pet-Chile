@@ -27,13 +27,31 @@
             <span class="cerrar">&times;</span>
             <h2>Registrar Nuevo Lead</h2>
             <form id="form-lead">
-                <label>Nombre del Cliente:</label>
-                <input type="text" id="nombreCliente" required>
-                
-                <label>¿Desea comprar?</label>
-                <select id="quiereComprar">
-                    <option value="true">Sí, desea comprar</option>
-                    <option value="false">No, solo está consultando</option>
+    <label>Nombre del Cliente:</label>
+    <input type="text" id="nombreCliente" required>
+    
+    <label>Nombre de la Mascota:</label>
+    <input type="text" id="nombreMascota" required>
+
+    <label>Canal de Origen:</label>
+    <select id="canalOrigen">
+        <option value="WhatsApp">WhatsApp</option>
+        <option value="Instagram">Instagram</option>
+        <option value="Facebook">Facebook</option>
+        <option value="TikTok">TikTok</option>
+    </select>
+
+    <label>Fecha de Cumpleaños de la Mascota:</label>
+    <input type="date" id="fechaCumple" required>
+    
+    <label>¿Desea comprar?</label>
+    <select id="quiereComprar">
+        <option value="true">Sí, desea comprar</option>
+        <option value="false">No, solo está consultando</option>
+    </select>
+
+    <button type="button" id="btn-guardar">Guardar y Avanzar</button>
+</form>
                 </select>
 
                 <button type="button" id="btn-guardar">Guardar y Avanzar</button>

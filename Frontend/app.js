@@ -15,7 +15,10 @@ btnNuevoLead.addEventListener("click", () => modal.classList.remove("oculto"));
 btnCerrar.addEventListener("click", () => modal.classList.add("oculto"));
 
 async function guardarLead() {
-    const nombre = document.getElementById("nombreCliente").value;
+    const nombreCliente = document.getElementById("nombreCliente").value;
+    const nombreMascota = document.getElementById("nombreMascota").value;
+    const canalOrigen = document.getElementById("canalOrigen").value;
+    const fechaCumple = document.getElementById("fechaCumple").value;
     const compra = document.getElementById("quiereComprar").value === "true";
 
     try {
@@ -42,8 +45,11 @@ async function guardarLead() {
                 body: JSON.stringify({
                     action: "complete",
                     variables: [
-                        { name: "quiereComprar", value: compra },
-                        { name: "nombreCliente", value: nombre }
+                        { name: "nombreCliente", value: nombreCliente },
+                        { name: "nombreMascota", value: nombreMascota },
+                        { name: "canalOrigen", value: canalOrigen },
+                        { name: "fechaCumple", value: fechaCumple },
+                        { name: "quiereComprar", value: compra }
                     ]
                 })
             });
@@ -53,9 +59,10 @@ async function guardarLead() {
         modal.classList.add("oculto");
         cargarTareas();
     } catch (error) {
-        console.error(error);
+        alert("Error: " + error.message);
     }
 }
+
 
 async function cargarTareas() {
     listaTareas.innerHTML = '<p class="loading">Cargando...</p>';

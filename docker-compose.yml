@@ -1,5 +1,6 @@
 
 services:
+  # BASE DE DATOS DE FLOWABLE
   postgres:
     image: postgres:16-alpine
     container_name: flowable-postgres
@@ -24,6 +25,33 @@ services:
       timeout: 5s
       retries: 10
 
+  # BASE DE DATOS DEL NEGOCIO
+  peluditos-postgres:
+    image: postgres:16-alpine
+    container_name: peluditos-postgres
+
+    environment:
+      POSTGRES_DB: peluditos_db
+      POSTGRES_USER: "${PELUDITOS_DB_USER:-flowable}"
+      POSTGRES_PASSWORD: "${PELUDITOS_DB_PASSWORD:?PELUDITOS_DB_PASSWORD_requerida}"
+
+    ports:
+      - "${PELUDITOS_DB_PORT:-5433}:5432"
+
+    volumes:
+      - peluditos_data:/var/lib/postgresql/data
+      - ./Backend-Webservices/database/init_peluditos.sql:/docker-entrypoint-initdb.d/01-init_peluditos.sql:ro
+
+    networks:
+      - flowable-network
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # MOTOR FLOWABLE OSS
   flowable-rest:
     image: flowable/flowable-rest:7.2.0
     container_name: flowable-rest
@@ -55,6 +83,7 @@ services:
 
 volumes:
   postgres_data:
+  peluditos_data:
 
 networks:
   flowable-network:

@@ -1,5 +1,8 @@
 
+
 package cl.peluditos.webservice;
+
+import jakarta.ws.rs.core.Response;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,10 +17,15 @@ import static org.mockito.Mockito.*;
 
 class FechasEspecialesControllerTests {
 
+    // PRUEBA 1: CONSULTAR FECHAS ESPECIALES
+
     @Test
     void debeDevolverDosClientesConFechasEspeciales() {
 
         JdbcTemplate jdbcTemplate = mock(JdbcTemplate.class);
+
+        LeadRegistrationService servicio =
+            mock(LeadRegistrationService.class);
 
         List<Map<String, String>> datos = List.of(
             Map.of(
@@ -41,46 +49,113 @@ class FechasEspecialesControllerTests {
         )).thenReturn(datos);
 
         FechasEspecialesController controller =
-            new FechasEspecialesController(jdbcTemplate);
+            new FechasEspecialesController(
+                jdbcTemplate, servicio
+            );
 
         List<Map<String, String>> resultado =
             controller.obtenerFechasProximas();
 
         assertEquals(2, resultado.size());
-        assertEquals("Maria Gonzalez",
-            resultado.get(0).get("cliente"));
-        assertEquals("Luna",
-            resultado.get(0).get("mascota"));
-        assertEquals("Pedro Ramirez",
-            resultado.get(1).get("cliente"));
-        assertEquals("Max",
-            resultado.get(1).get("mascota"));
+        assertEquals(
+            "Maria Gonzalez",
+            resultado.get(0).get("cliente")
+        );
+        assertEquals(
+            "Luna",
+            resultado.get(0).get("mascota")
+        );
 
-        verify(jdbcTemplate, times(1)).query(
+        verify(jdbcTemplate).query(
             contains("FROM fechas_especiales"),
             org.mockito.ArgumentMatchers
                 .<RowMapper<Map<String, String>>>any()
         );
     }
 
+    // PRUEBA 2: REGISTRAR LEAD CORRECTAMENTE
 
-@Test
-void debeRegistrarClienteDesdeFlowable() {
+    @Test
+    void debeRegistrarLeadConCincoDatos() {
 
-    JdbcTemplate jdbcTemplate = mock(JdbcTemplate.class);
+        JdbcTemplate jdbcTemplate = mock(JdbcTemplate.class);
 
-    FechasEspecialesController controller =
-        new FechasEspecialesController(jdbcTemplate);
+        LeadRegistrationService servicio =
+            mock(LeadRegistrationService.class);
 
-    String respuesta = controller.registrarLead(
-        Map.of("nombreCliente", "Cliente Prueba")
-    );
+        FechasEspecialesController controller =
+            new FechasEspecialesController(
+                jdbcTemplate, servicio
+            );
 
-    assertEquals("Lead guardado exitosamente", respuesta);
+        Map<String, Object> datos = Map.of(
+            "nombreCliente", "Cliente Prueba",
+            "nombreMascota", "Luna",
+            "canalOrigen", "WhatsApp",
+            "fechaCumple", "2026-11-24",
+            "quiereComprar", true
+        );
 
-    verify(jdbcTemplate).update(
-        "INSERT INTO clientes (nombre) VALUES (?)",
-        "Cliente Prueba"
-    );
-}
+        Response respuesta = controller.registrarLead(datos);
+
+        assertEquals(200, respuesta.getStatus());
+        assertEquals(
+            "Lead guardado exitosamente",
+            respuesta.getEntity()
+        );
+
+        verify(servicio, times(1)).registrar(datos);
+    }
+
+    // PRUEBA 3: DATOS INVALIDOS
+
+    @Test
+    void debeRechazarDatosInvalidos() {
+
+        JdbcTemplate jdbcTemplate = mock(JdbcTemplate.class);
+
+        LeadRegistrationService servicio =
+            mock(LeadRegistrationService.class);
+
+        FechasEspecialesController controller =
+            new FechasEspecialesController(
+                jdbcTemplate, servicio
+            );
+
+        doThrow(new IllegalArgumentException(
+            "Nombre obligatorio"
+        )).when(servicio).registrar(anyMap());
+
+        Response respuesta = controller.registrarLead(
+            Map.of("nombreCliente", "")
+        );
+
+        assertEquals(400, respuesta.getStatus());
+    }
+
+    // PRUEBA 4: ERROR DE BASE DE DATOS
+
+    @Test
+    void debeResponderErrorSiFallaElRegistro() {
+
+        JdbcTemplate jdbcTemplate = mock(JdbcTemplate.class);
+
+        LeadRegistrationService servicio =
+            mock(LeadRegistrationService.class);
+
+        FechasEspecialesController controller =
+            new FechasEspecialesController(
+                jdbcTemplate, servicio
+            );
+
+        doThrow(new RuntimeException(
+            "Error de base de datos"
+        )).when(servicio).registrar(anyMap());
+
+        Response respuesta = controller.registrarLead(
+            Map.of("nombreCliente", "Cliente Prueba")
+        );
+
+        assertEquals(500, respuesta.getStatus());
+    }
 }

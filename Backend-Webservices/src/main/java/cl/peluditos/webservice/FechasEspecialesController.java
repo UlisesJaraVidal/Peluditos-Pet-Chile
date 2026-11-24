@@ -1,3 +1,4 @@
+
 package cl.peluditos.webservice;
 
 import jakarta.ws.rs.Consumes;
@@ -6,6 +7,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.springframework.stereotype.Component;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,12 +20,20 @@ import java.util.Map;
 public class FechasEspecialesController {
 
     private final JdbcTemplate jdbcTemplate;
+    private final LeadRegistrationService leadRegistrationService;
 
-    public FechasEspecialesController(JdbcTemplate jdbcTemplate) {
+    public FechasEspecialesController(
+            JdbcTemplate jdbcTemplate,
+            LeadRegistrationService leadRegistrationService) {
+
         this.jdbcTemplate = jdbcTemplate;
+        this.leadRegistrationService = leadRegistrationService;
     }
 
-    // 1. ENDPOINT ORIGINAL (GET) - Para leer las fechas
+    // ==========================================
+    // CONSULTAR FECHAS ESPECIALES
+    // ==========================================
+
     @GET
     @Path("/fechas-proximas")
     @Produces(MediaType.APPLICATION_JSON)
@@ -46,30 +56,61 @@ public class FechasEspecialesController {
                 "cliente", rs.getString("cliente"),
                 "mascota", rs.getString("mascota"),
                 "tipo", rs.getString("tipo"),
-                "fecha", rs.getDate("fecha").toLocalDate().toString()
+                "fecha", rs.getDate("fecha")
+                    .toLocalDate().toString()
             )
         );
     }
 
-    // 2. NUEVO ENDPOINT (POST) - Para que el Worker guarde al cliente desde Flowable
+    // ==========================================
+    // REGISTRAR LEAD DESDE FLOWABLE
+    // ==========================================
+
     @POST
     @Path("/registrar")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public String registrarLead(Map<String, Object> payload) {
+    public Response registrarLead(Map<String, Object> payload) {
+
         try {
-            // Extraemos el nombre que envía Flowable (si no viene, ponemos uno por defecto)
-            String nombreCliente = (String) payload.getOrDefault("nombreCliente", "Cliente Sin Nombre");
-            
-            // Hacemos el INSERT en la base de datos PostgreSQL
-            String sql = "INSERT INTO clientes (nombre) VALUES (?)";
-            jdbcTemplate.update(sql, nombreCliente);
-            
-            System.out.println("✅ ¡Lead guardado en la base de datos!: " + nombreCliente);
-            return "Lead guardado exitosamente";
+
+            // Registrar cliente, mascota y fecha
+            // mediante el servicio transaccional
+            leadRegistrationService.registrar(payload);
+
+            System.out.println(
+                "Lead registrado correctamente desde Flowable"
+            );
+
+            return Response.ok(
+                "Lead guardado exitosamente"
+            ).build();
+
+        } catch (IllegalArgumentException e) {
+
+            // Error de validacion de datos
+            System.err.println(
+                "Datos invalidos: " + e.getMessage()
+            );
+
+            return Response.status(
+                Response.Status.BAD_REQUEST
+            ).entity(
+                "Datos invalidos: " + e.getMessage()
+            ).build();
+
         } catch (Exception e) {
-            System.out.println("❌ Error al guardar el lead: " + e.getMessage());
-            return "Error al guardar el lead";
+
+            // Error interno o de base de datos
+            System.err.println(
+                "Error al registrar Lead: " + e.getMessage()
+            );
+
+            return Response.status(
+                Response.Status.INTERNAL_SERVER_ERROR
+            ).entity(
+                "Error al guardar el lead"
+            ).build();
         }
     }
 }

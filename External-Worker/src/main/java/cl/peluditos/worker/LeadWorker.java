@@ -3,76 +3,139 @@ package cl.peluditos.worker;
 
 import org.flowable.external.client.AcquiredExternalWorkerJob;
 import org.flowable.external.worker.annotation.FlowableWorker;
-import org.springframework.stereotype.Component;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Component
 public class LeadWorker {
 
+    // URL configurable sin modificar el codigo
+    @Value("${PELUDITOS_BACKEND_URL:http://localhost:8082}")
+    private String backendUrl;
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
     @FlowableWorker(topic = "registrarLeadTopic")
     public void procesarLead(AcquiredExternalWorkerJob job) {
 
-        System.out.println("==================================================");
-        System.out.println("¡Flowable me ha enviado un trabajo!");
+        System.out.println("====================================");
+        System.out.println("Procesando Lead desde Flowable");
 
         Map<String, Object> variables = job.getVariables();
-        System.out.println("Datos del Lead recibidos: " + variables);
-        System.out.println("==================================================");
 
-        try {
-            // Extraemos el nombre del cliente
-            String nombreCliente = "Desconocido";
-
-            if (variables.containsKey("nombreCliente")) {
-                nombreCliente = variables.get("nombreCliente").toString();
-            }
-
-            // Armamos el JSON para enviar al Backend
-            String jsonPayload = "{\"nombreCliente\":\"" + nombreCliente + "\"}";
-
-            // URL del Backend configurable mediante variable de entorno
-            String backendUrl = System.getenv().getOrDefault(
-                    "PELUDITOS_BACKEND_URL",
-                    "http://localhost:8082"
-            );
-
-            // Evitamos duplicar la barra final de la URL
-            if (backendUrl.endsWith("/")) {
-                backendUrl = backendUrl.substring(0, backendUrl.length() - 1);
-            }
-
-            // Creamos el cliente HTTP
-            HttpClient client = HttpClient.newHttpClient();
-
-            // Construimos la solicitud al Web Service JAX-RS
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(backendUrl + "/api/clientes/registrar"))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                    .build();
-
-            // Enviamos la solicitud al Backend
-            HttpResponse<String> response = client.send(
-                    request,
-                    HttpResponse.BodyHandlers.ofString()
-            );
-
-            // Mostramos el resultado de la comunicación
-            System.out.println(
-                    "Respuesta del Web Service (" +
-                    response.statusCode() + "): " +
-                    response.body()
-            );
-
-        } catch (Exception e) {
-            System.out.println(
-                    "Error al llamar al Web Service: " + e.getMessage()
+        if (variables == null) {
+            throw new IllegalArgumentException(
+                "El proceso no contiene variables"
             );
         }
+
+        // Obtener los cinco datos del formulario
+        String nombreCliente = obtenerTexto(
+            variables, "nombreCliente"
+        );
+
+        String nombreMascota = obtenerTexto(
+            variables, "nombreMascota"
+        );
+
+        String canalOrigen = obtenerTexto(
+            variables, "canalOrigen"
+        );
+
+        String fechaCumple = obtenerTexto(
+            variables, "fechaCumple"
+        );
+
+        boolean quiereComprar = Boolean.parseBoolean(
+            String.valueOf(
+                variables.getOrDefault("quiereComprar", false)
+            )
+        );
+
+        // Validar dato principal
+        if (nombreCliente.isBlank()) {
+            throw new IllegalArgumentException(
+                "El nombre del cliente es obligatorio"
+            );
+        }
+
+        // Preparar los datos que recibira el Backend
+        Map<String, Object> payload = new LinkedHashMap<>();
+
+        payload.put("nombreCliente", nombreCliente);
+        payload.put("nombreMascota", nombreMascota);
+        payload.put("canalOrigen", canalOrigen);
+        payload.put("fechaCumple", fechaCumple);
+        payload.put("quiereComprar", quiereComprar);
+
+        // Configurar la direccion del servicio
+        String url = backendUrl.replaceAll("/+$", "")
+            + "/api/clientes/registrar";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> request =
+            new HttpEntity<>(payload, headers);
+
+        try {
+            // Enviar solicitud HTTP al Backend JAX-RS
+            ResponseEntity<String> response =
+                restTemplate.postForEntity(
+                    url,
+                    request,
+                    String.class
+                );
+
+            String respuesta = response.getBody();
+
+            // Comprobar que el Backend confirme el registro
+            if (!response.getStatusCode().is2xxSuccessful()
+                || !"Lead guardado exitosamente".equals(respuesta)) {
+
+                throw new IllegalStateException(
+                    "El Backend no confirmo el registro: "
+                    + respuesta
+                );
+            }
+
+            System.out.println(
+                "Lead registrado correctamente: " + nombreCliente
+            );
+
+        } catch (RestClientException e) {
+
+            System.err.println(
+                "Error de comunicacion con el Backend: "
+                + e.getMessage()
+            );
+
+            throw new IllegalStateException(
+                "No fue posible registrar el Lead",
+                e
+            );
+        }
+    }
+
+    // Obtener valores de texto de manera segura
+    private String obtenerTexto(
+        Map<String, Object> variables,
+        String clave
+    ) {
+        Object valor = variables.get(clave);
+
+        return valor == null
+            ? ""
+            : valor.toString().trim();
     }
 }

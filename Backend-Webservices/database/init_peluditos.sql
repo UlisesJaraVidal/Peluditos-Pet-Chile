@@ -79,3 +79,22 @@ FROM fechas_especiales f
 JOIN mascotas m ON f.mascota_id = m.id
 JOIN clientes c ON m.cliente_id = c.id
 ORDER BY f.fecha;
+
+
+-- ==========================================
+-- EVALUACION 3 - ACTUALIZACION DE CLIENTES
+-- ==========================================
+
+-- Registrar canal de origen del cliente
+ALTER TABLE clientes
+ADD COLUMN IF NOT EXISTS canal_origen VARCHAR(50);
+
+-- Registrar intencion de compra
+ALTER TABLE clientes
+ADD COLUMN IF NOT EXISTS quiere_comprar BOOLEAN;
+
+-- Verificar estructura de clientes
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_name = 'clientes'
+ORDER BY ordinal_position;

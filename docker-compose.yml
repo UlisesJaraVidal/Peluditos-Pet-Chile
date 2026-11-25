@@ -2,7 +2,7 @@
 services:
   # BASE DE DATOS DE FLOWABLE
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16-bookworm
     container_name: flowable-postgres
 
     environment:
@@ -27,7 +27,7 @@ services:
 
   # BASE DE DATOS DEL NEGOCIO
   peluditos-postgres:
-    image: postgres:16-alpine
+    image: postgres:16-bookworm
     container_name: peluditos-postgres
 
     environment:

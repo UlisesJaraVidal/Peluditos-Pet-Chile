@@ -85,3 +85,42 @@ Pendiente:
 - Incorporar el video de la emprendedora.
 - Completar la revisión de credenciales.
 - Revisar y aprobar la PR #2.
+
+## Evaluacion 3 - Integracion del sistema
+
+### Componentes
+
+- Flowable REST 7.2.0: motor BPMN.
+- PostgreSQL 16 Bookworm: dos bases de datos.
+- Backend JAX-RS: Spring Boot, puerto 8082.
+- External Worker: Spring Boot, puerto 8081.
+- Frontend: HTML, CSS y JavaScript.
+
+### Pruebas realizadas
+
+1. Backend: 5 pruebas Maven aprobadas.
+2. External Worker: 1 prueba Maven aprobada.
+3. Proceso to_be_leads desplegado en Flowable.
+4. Tareas humanas completadas correctamente.
+5. Registro de cinco datos comprobado en PostgreSQL.
+6. Instancia BPMN finalizada exitosamente.
+7. Consulta de fechas especiales ejecutada.
+
+### Evidencias
+
+Las capturas estan disponibles en:
+
+Videos/Entrega-3/Evidencias/
+
+Consultar tambien:
+
+Videos/Entrega-3/README.md
+
+### Pendientes de cierre
+
+- Integrar los cambios finales de Ulises.
+- Validar la interfaz y el BPMN de Oportunidades.
+- Corregir el diagrama de arquitectura.
+- Revisar seguridad y renovar credenciales expuestas.
+- Incorporar los videos finales.
+- Preparar el merge a main y la entrega.

@@ -16,7 +16,7 @@ import java.util.Map;
 public class LeadWorker {
 
     // 1. Externalizamos la URL 
-    @Value("${web.service.url:http://localhost:8082/api/clientes/registrar}")
+    @Value("${web.service.url:http://localhost:8082/api/leads}")
     private String webServiceUrl;
 
     @FlowableWorker(topic = "registrarLeadTopic")
